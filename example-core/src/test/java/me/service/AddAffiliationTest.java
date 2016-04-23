@@ -1,12 +1,13 @@
 package me.service;
 
+import me.BaseTest;
 import me.db.query.GpayrollDataBase;
 import org.junit.Test;
 
 /**
  * Created by chn on 16/4/23.
  */
-public class AddAffiliationTest {
+public class AddAffiliationTest extends BaseTest {
 
     @Test
     public void test() {

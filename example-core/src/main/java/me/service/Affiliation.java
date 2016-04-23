@@ -1,8 +1,7 @@
 package me.service;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.Set;
 
 /**
  * Created by chn on 16/1/23.
@@ -16,7 +15,11 @@ public class Affiliation {
     @Column
     String name;
 
-    double calcDues() {
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    public Set<Employee> members;
+
+    double calcCharge() {
         return 0;
     }
 
@@ -34,6 +37,14 @@ public class Affiliation {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Set<Employee> getMembers() {
+        return members;
+    }
+
+    public void setMembers(Set<Employee> members) {
+        this.members = members;
     }
 
     @Override
