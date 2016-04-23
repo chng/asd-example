@@ -109,7 +109,16 @@ public class GpayrollDataBase {
         Ebean.insert(affiliation);
     }
 
+    public static void saveAffiliation(Affiliation aff) {
+        Ebean.save(aff);
+    }
+
     public static Affiliation getAffiliationByAffId(long affId) {
         return Ebean.find(Affiliation.class, affId);
     }
+
+    public static Affiliation getAffiliationByAffName(String name) {
+        return Ebean.find(Affiliation.class).where().eq("name", name).findUnique();
+    }
+
 }

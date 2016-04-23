@@ -6,7 +6,7 @@ package me.service;
 public class AffiliationNull extends Affiliation {
 
     @Override
-    double calcDues() {
+    double calcCharge() {
         return 0;
     }
 

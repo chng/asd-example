@@ -6,10 +6,9 @@ import me.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Set;
 
 /**
  * Created by chn on 16/1/23.
@@ -21,14 +20,23 @@ public class Employee {
 
     @Id
     private long empId;
-    @Column
-    private String bankAccount;
-
     public long getEmpId() {
         return empId;
     }
     public void setEmpId(long empId) {
         this.empId = empId;
+    }
+
+    @Column
+    private String bankAccount;
+    public String getBankAccount() {
+        return bankAccount;
+    }
+    public void setBankAccount(String bankAccount) {
+        this.bankAccount = bankAccount;
+        if(payBy instanceof PayByBankAccount) {
+            ((PayByBankAccount) payBy).setBankAccount(bankAccount);
+        }
     }
 
     @Column
@@ -50,22 +58,15 @@ public class Employee {
     }
 
 
-    private Affiliation affiliation = new AffiliationNull();
-    public Affiliation getAffiliation() {
-        return affiliation;
+    @ManyToMany(cascade = CascadeType.ALL)
+    private Set<Affiliation> affiliations;
+    public Set<Affiliation> getAffiliations() {
+        return affiliations;
     }
-    public void setAffiliation(Affiliation affiliation) {
-        this.affiliation = affiliation;
+    public void setAffiliations(Set<Affiliation> affiliations) {
+        this.affiliations = affiliations;
     }
 
-    @Column
-    private String affiliationName = affiliation.toString();
-    public String getAffiliationName() {
-        return affiliationName;
-    }
-    public void setAffiliationName(String affiliationName) {
-        this.affiliationName = affiliationName;
-    }
 
     private PayBy payBy = new PayByBankAccount();
     public PayBy getPayBy() {
@@ -117,8 +118,12 @@ public class Employee {
     }
 
 
-    public double calcSum() {
-        return getPayClassification().calcSalary() - getAffiliation().calcDues();
+    private double calcSum() {
+        double affCharge = 0.;
+        for(Affiliation aff: affiliations) {
+            affCharge += aff.calcCharge();
+        }
+        return getPayClassification().calcSalary() - affCharge;
     }
 
     public void pay() {
@@ -129,12 +134,6 @@ public class Employee {
         payBy.pay(sum);
     }
 
-    public void setBankAccount(String bankAccount) {
-        this.bankAccount = bankAccount;
-        if(payBy instanceof PayByBankAccount) {
-            ((PayByBankAccount) payBy).setBankAccount(bankAccount);
-        }
-    }
 
     @WhenCreated
     Timestamp gmtCreate;
