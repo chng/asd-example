@@ -32,16 +32,17 @@ public class JsonUtilTest {
 
         String jsonString = "{\"salaryPerHour\":200}";
         System.out.println(JsonUtil.canParse(jsonString, HourlySalary.class));
-        Object o = JSON.parse(
-                jsonString
+        Object o = JsonUtil.toJavaObject(
+                jsonString, HourlySalary.class
                 );
         System.out.println(JSON.toJSONString(o));
         assert(o!=null);
 
+        // TODO canParse的逻辑需要考虑
         jsonString = "{\"salaryPerMonth\":1000}";
         System.out.println(JsonUtil.canParse(jsonString, HourlySalary.class));
-        o = JSON.parse(
-                jsonString
+        o = JsonUtil.toJavaObject(
+                jsonString, HourlySalary.class
         );
         System.out.println(JSON.toJSONString(o));
         assert(o!=null);
@@ -62,18 +63,20 @@ public class JsonUtilTest {
     public void test() {
         System.out.println(JsonUtil.canParse("{\"a\":0,\"map\":{}}", SubObject.class));
         System.out.println(JsonUtil.toJSONString(new SubObject()));
-
     }
 
     @Test
     public void testReflection() {
         Class clazz = Employee.class;
         Set<Field> declaredFields = Sets.newHashSet(clazz.getDeclaredFields());
+        Set<Field> fields = Sets.newHashSet(clazz.getFields());
         Set<Method> declaredMethods = Sets.newHashSet(clazz.getDeclaredMethods());
         Set<Method> methods = Sets.newHashSet(clazz.getMethods());
 
         System.out.println("------------declaredFields------------");
         printMemberName(declaredFields);
+        System.out.println("------------fields------------");
+        printMemberName(fields);
         System.out.println("------------declaredMethods------------");
         printMemberName(declaredMethods);
         System.out.println("------------methods------------");

@@ -13,6 +13,7 @@ public class DeleteEmployeeTransaction implements Transaction {
     }
 
     public void execute() {
+        System.out.println(empId);
         Ebean.delete(Employee.class, empId);
     }
 }

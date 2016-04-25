@@ -1,9 +1,11 @@
 package me.service;
 
+import java.io.Serializable;
+
 /**
  * Created by chn on 15/12/18.
  */
-public abstract class PayBy {
+public abstract class PayBy implements Serializable {
 
     long empId = 0;
     public long getEmpId() {

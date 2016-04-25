@@ -2,13 +2,13 @@ package me.db.query;
 
 import com.avaje.ebean.Ebean;
 import me.service.*;
-import me.util.JsonUtil;
-import me.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.SerializationUtils;
 
 import javax.annotation.Resource;
+import javax.persistence.PersistenceException;
 import java.util.Date;
 import java.util.List;
 
@@ -39,57 +39,71 @@ public class GpayrollDataBase {
         GpayrollDataBase.payClassificationJsonParser = payClassificationJsonParser;
     }
 
-    static void parseJsonInEmployee(Employee e) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    static void parseStorableInEmployee(Employee e) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
 
         if(e==null) {
             return;
         }
 
-        if(!Strings.isEmpty(e.getPayByJson())) {
-            log.info(e.getPayByJson());
-            e.setPayBy((PayBy) payByJsonParser.parse(e.getPayByJson()));
-        }
-        if(!Strings.isEmpty(e.getPayClassificationJson())) {
-            log.info(e.getPayClassificationJson());
-            e.setPayClassification((PayClassification) payClassificationJsonParser.parse(e.getPayClassificationJson()));
-        }
-        if(!Strings.isEmpty(e.getPayScheduleJson())) {
-            log.info(e.getPayScheduleJson());
-            e.setPaySchedule((PaySchedule) payScheduleJsonParser.parse(e.getPayScheduleJson()));
-        }
+        e.setPayBy((PayBy) SerializationUtils.deserialize(e.getPayByJson()));
+        e.setPayClassification((PayClassification) SerializationUtils.deserialize(e.getPayClassificationJson()));
+
+//        if(!Strings.isEmpty(e.getPayByJson())) {
+//            log.info(e.getPayByJson());
+//            e.setPayBy((PayBy) payByJsonParser.parse(e.getPayByJson()));
+//        }
+//        if(!Strings.isEmpty(e.getPayClassificationJson())) {
+//            log.info(e.getPayClassificationJson());
+//            e.setPayClassification((PayClassification) payClassificationJsonParser.parse(e.getPayClassificationJson()));
+//        }
+
+
     }
 
-    static void parseEmployeeAttrToJson(Employee e) {
-        e.setPayClassificationJson(JsonUtil.toJSONString(e.getPayClassification()));
-        e.setPayByJson(JsonUtil.toJSONString(e.getPayBy()));
-        e.setPayScheduleJson(JsonUtil.toJSONString(e.getPaySchedule()));
+    static void parseEmployeeAttrToStorable(Employee e) {
+//        e.setPayByJson(JsonUtil.toJSONString(e.getPayBy()));
+//        e.setPayClassificationJson(JsonUtil.toJSONString(e.getPayClassification()));
+        e.setPayByJson(SerializationUtils.serialize(e.getPayBy()));
+        e.setPayClassificationJson(SerializationUtils.serialize(e.getPayClassification()));
     }
 
     public static Employee getEmployeeById(long empId) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
         Employee e = Ebean.find(Employee.class, empId);
-        parseJsonInEmployee(e);
+        parseStorableInEmployee(e);
         return e;
     }
 
     public static void addEmployee(Employee employee) {
-        parseEmployeeAttrToJson(employee);
-        Ebean.insert(employee);
+        parseEmployeeAttrToStorable(employee);
+        try {
+            Ebean.insert(employee);
+        } catch (PersistenceException e) {
+            log.error(e.getMessage(),e);
+        }
     }
 
     public static void saveEmployee(Employee employee) {
-        parseEmployeeAttrToJson(employee);
-        Ebean.save(employee);
+        parseEmployeeAttrToStorable(employee);
+        try {
+            Ebean.save(employee);
+        } catch (PersistenceException e) {
+            log.error(e.getMessage(),e);
+        }
     }
 
     public static void addTimeCard(TimeCard timeCard) {
-        Ebean.insert(timeCard);
+        try {
+            Ebean.save(timeCard);
+        } catch (PersistenceException e) {
+            log.error(e.getMessage(),e);
+        }
     }
 
     public static List<TimeCard> getTimeCardByEmpId(long empId, Date startTime, Date endTime) {
         return Ebean.find(TimeCard.class).where()
-                .eq("emp_id", empId)
-                .ge("start_time", startTime)
-                .lt("end_time", endTime)
+                .eq("empId", empId)
+                .ge("startTime", startTime)
+                .lt("endTime", endTime)
                 .findList();
     }
 
@@ -106,11 +120,19 @@ public class GpayrollDataBase {
     }
 
     public static void addAffiliation(Affiliation affiliation) {
-        Ebean.insert(affiliation);
+        try {
+            Ebean.insert(affiliation);
+        } catch (PersistenceException e) {
+            log.error(e.getMessage(),e);
+        }
     }
 
     public static void saveAffiliation(Affiliation aff) {
-        Ebean.save(aff);
+        try {
+            Ebean.save(aff);
+        } catch (PersistenceException e) {
+            log.error(e.getMessage(),e);
+        }
     }
 
     public static Affiliation getAffiliationByAffId(long affId) {
@@ -121,4 +143,20 @@ public class GpayrollDataBase {
         return Ebean.find(Affiliation.class).where().eq("name", name).findUnique();
     }
 
+    public static List<Object> getAllEmpIds() {
+        List<Object> ids = Ebean.find(Employee.class).findIds();
+        return ids;
+    }
+
+    public static List<Employee> getAllEmployeesByPage(long startId, long endId) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+        //List<Employee> emps = Ebean.find(Employee.class).findPagedList(0, pageSize).getList();
+        List<Employee> emps = Ebean.find(Employee.class)
+                .where()
+                .ge("empId", startId).lt("empId", endId)
+                .findList();
+        for(Employee e: emps) {
+            parseStorableInEmployee(e);
+        }
+        return emps;
+    }
 }

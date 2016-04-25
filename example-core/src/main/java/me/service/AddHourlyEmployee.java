@@ -19,11 +19,12 @@ public class AddHourlyEmployee implements Transaction {
         employee.setName(name);
         employee.setBankAccount(Strings.EMPTY);
 
-        employee.setPaySchedule(new MonthlyPaySchedule());
+        //employee.setPaySchedule(new MonthlyPaySchedule());
         employee.setPayBy(new PayByBankAccount(empId, Strings.EMPTY));
 
         HourlySalary hourlySalary = new HourlySalary(empId);
         hourlySalary.setSalaryPerHour(hourlySalaryMount);
+        hourlySalary.setPaySchedule(new WeeklyPaySchedule());
         employee.setPayClassification(hourlySalary);
     }
 

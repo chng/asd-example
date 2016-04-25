@@ -3,8 +3,6 @@ package me.service;
 import me.db.query.GpayrollDataBase;
 import me.util.Strings;
 
-import javax.annotation.Resource;
-
 /**
  * Created by chn on 16/1/23.
  */
@@ -20,20 +18,18 @@ public class AddSalariedEmployee implements Transaction{
 
         String bankAccount = Strings.EMPTY;
 
-        employee.setPaySchedule(new MonthlyPaySchedule());
+        //employee.setPaySchedule(new MonthlyPaySchedule());
         employee.setPayBy(new PayByPost(empId, address));
 
         SalariedSalary salariedSalary = new SalariedSalary(empId);
         salariedSalary.setSalaryPerMonth(salaryPerMonth);
+        salariedSalary.setPaySchedule(new MonthlyPaySchedule());
         employee.setBankAccount(bankAccount);
         employee.setPayClassification(salariedSalary);
 
     }
 
-    @Resource
-    GpayrollDataBase gpayrollDataBase;
-
     public void execute() {
-        gpayrollDataBase.addEmployee(employee);
+        GpayrollDataBase.addEmployee(employee);
     }
 }

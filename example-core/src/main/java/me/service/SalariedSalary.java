@@ -1,5 +1,7 @@
 package me.service;
 
+import java.util.Date;
+
 /**
  * Created by chn on 16/1/23.
  */
@@ -27,7 +29,11 @@ public class SalariedSalary extends PayClassification {
     private double salaryPerMonth = 0.0;
 
     public double calcSalary() {
-        return 0;
+        return getSalaryPerMonth();
     }
 
+    public double calcSalary(Date whichMonth) {
+        // 计算whichMonth的salary
+        return calcSalary();
+    }
 }

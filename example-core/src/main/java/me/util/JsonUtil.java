@@ -1,6 +1,7 @@
 package me.util;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Sets;
 
@@ -14,16 +15,46 @@ import java.util.Set;
  * Created by chn on 16/4/22.
  */
 public class JsonUtil {
+
+    /**
+     * 将一个对象转换成一个Json.
+     *
+     * @param o
+     * @return
+     */
+
     public static String toJSONString(Object o) {
         return JSON.toJSONString(o);
     }
 
+    /**
+     * 将一个json转换成clazz类型的对象
+     *
+     * @param json
+     * @param clazz
+     * @param <T>
+     * @return
+     */
     public static <T>Object toJavaObject(String json, Class<T> clazz ) {
         return JSON.parseObject(json, clazz);
     }
 
+    /**
+     * 判断一个一般性的json是否可以转换成clazz的对象.
+     *
+     * 将json(字符串头部不带类名的json)转换成一个JSONObject,然后逐项检查JSONObject的key是否存在于clazz类的可访问的元素中.
+     * @param json
+     * @param clazz
+     * @return
+     */
+    //@Deprecated
     public static boolean canParse(String json, Class clazz) {
-        JSONObject o = JSON.parseObject(json);
+        JSONObject o;
+        try {
+            o = JSON.parseObject(json);
+        } catch(JSONException e) {
+            return false;
+        }
         Set<String> accessableField = Sets.newHashSet();
 
         for(Class superClazz = clazz; superClazz!=Object.class; superClazz = superClazz.getSuperclass()) {
@@ -65,10 +96,6 @@ public class JsonUtil {
             }
         }
 
-//        for(String name: accessableField) {
-//            System.out.println(name);
-//        }
-
         if(o.size() > accessableField.size()) {
             return false;
         }
@@ -80,4 +107,5 @@ public class JsonUtil {
         }
         return true;
     }
+
 }
