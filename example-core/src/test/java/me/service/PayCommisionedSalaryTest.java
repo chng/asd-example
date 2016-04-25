@@ -33,6 +33,12 @@ public class PayCommisionedSalaryTest extends BaseTest {
                 100.);
         tt.execute();
 
+        tt = new SalesReceiptTransaction(
+                4L,
+                dateFormat.parse("2015-10-10 15:12:12"),
+                100.);
+        tt.execute();
+
         Employee employee = GpayrollDataBase.getEmployeeById(empId);
         assert(employee!=null);
 

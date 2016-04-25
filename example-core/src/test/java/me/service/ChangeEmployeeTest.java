@@ -10,7 +10,7 @@ import org.junit.Test;
  */
 public class ChangeEmployeeTest extends BaseTest {
 
-    static long empId = 3L;
+    static long empId = 4L;
 
     @BeforeClass
     public static void addEmployee() {
@@ -37,6 +37,7 @@ public class ChangeEmployeeTest extends BaseTest {
     @Test
     public void testChangePayClassification() throws IllegalAccessException, ClassNotFoundException, InstantiationException {
         PayClassification newPayClassification = new CommisionedSalary(empId, 2000, 0.8);
+        assert(newPayClassification.getPaySchedule()!=null);
         Transaction change = new ChangePayClassificationTransaction(empId, newPayClassification);
         change.execute();
 

@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 /**
  * Created by chn on 16/4/22.
  */
+@Deprecated
 @Component
 public class SalariedSalaryJsonParser extends JsonToObjectParser {
     @Resource

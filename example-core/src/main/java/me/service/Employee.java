@@ -2,12 +2,12 @@ package me.service;
 
 import com.avaje.ebean.annotation.WhenCreated;
 import com.avaje.ebean.annotation.WhenModified;
-import me.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -75,12 +75,12 @@ public class Employee {
     public void setPayBy(PayBy payBy) {
         this.payBy = payBy;
     }
-    @Column
-    private String payByJson = payBy.toString();
-    public String getPayByJson() {
+    @Column(length = 2048)
+    private byte[] payByJson;
+    public byte[] getPayByJson() {
         return payByJson;
     }
-    public void setPayByJson(String payByJson) {
+    public void setPayByJson(byte[] payByJson) {
         this.payByJson = payByJson;
     }
 
@@ -91,53 +91,35 @@ public class Employee {
     public void setPayClassification(PayClassification payClassification) {
         this.payClassification = payClassification;
     }
-    @Column
-    private String payClassificationJson = Strings.EMPTY;
-    public String getPayClassificationJson() {
+    @Column(length = 2048)
+    private byte[] payClassificationJson;
+    public byte[] getPayClassificationJson() {
         return payClassificationJson;
     }
-    public void setPayClassificationJson(String payClassificationJson) {
+    public void setPayClassificationJson(byte[] payClassificationJson) {
         this.payClassificationJson = payClassificationJson;
-    }
-
-
-    private PaySchedule paySchedule = null;
-    public PaySchedule getPaySchedule() {
-        return paySchedule;
-    }
-    public void setPaySchedule(PaySchedule paySchedule) {
-        this.paySchedule = paySchedule;
-    }
-    @Column
-    private String payScheduleJson = Strings.EMPTY;
-    public String getPayScheduleJson() {
-        return payScheduleJson;
-    }
-    public void setPayScheduleJson(String payScheduleJson) {
-        this.payScheduleJson = payScheduleJson;
     }
 
 
     private double calcSum() {
         double affCharge = 0.;
-        for(Affiliation aff: affiliations) {
+        for (Affiliation aff : affiliations) {
             affCharge += aff.calcCharge();
         }
         return getPayClassification().calcSalary() - affCharge;
     }
-
-    public void pay() {
-        if(!paySchedule.isPayDay()) {
-            return;
-        }
-        double sum = calcSum();
-        payBy.pay(sum);
-    }
-
 
     @WhenCreated
     Timestamp gmtCreate;
 
     @WhenModified
     Timestamp gmtModify;
+
+    public boolean isPayDay(Date payDay) {
+        return payClassification.getPaySchedule().isPayDay(payDay);
+    }
+
+    public void payDay(PayCheck pc) {
+        //TODO no implementation
+    }
 }

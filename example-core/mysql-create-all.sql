@@ -22,9 +22,8 @@ create table employee (
   bank_account                  varchar(255),
   name                          varchar(255),
   addr                          varchar(255),
-  pay_by_json                   varchar(255),
-  pay_classification_json       varchar(255),
-  pay_schedule_json             varchar(255),
+  pay_by_json                   varbinary(2048),
+  pay_classification_json       varbinary(2048),
   gmt_create                    datetime(6) not null,
   gmt_modify                    datetime(6) not null,
   constraint pk_employee primary key (emp_id)

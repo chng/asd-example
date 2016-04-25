@@ -13,7 +13,7 @@ public class DateUtilTest {
     @Test
     public void test() throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = dateFormat.parse("2011-12-03 12:12:12");
+        Date date = dateFormat.parse("2011-10-31 12:12:12");
         System.out.println(date);
         System.out.println(DateUtil.isLastDayOfMonth(date));
         System.out.println(DateUtil.startOfCurrentMonth(date));
