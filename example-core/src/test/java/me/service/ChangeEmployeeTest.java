@@ -36,6 +36,7 @@ public class ChangeEmployeeTest extends BaseTest {
 
     @Test
     public void testChangePayClassification() throws IllegalAccessException, ClassNotFoundException, InstantiationException {
+
         PayClassification newPayClassification = new CommisionedSalary(empId, 2000, 0.8);
         assert(newPayClassification.getPaySchedule()!=null);
         Transaction change = new ChangePayClassificationTransaction(empId, newPayClassification);
@@ -44,7 +45,7 @@ public class ChangeEmployeeTest extends BaseTest {
         PayClassification pc = GpayrollDataBase.getEmployeeById(empId).getPayClassification();
         assert(pc.getEmpId()==empId);
         assert(((CommisionedSalary)pc).getProfitFactor()==0.8);
-        assert(((CommisionedSalary)pc).getSalaryPerMonth()==2000.);
+        assert(((CommisionedSalary)pc).getSalaryPerDue()==2000.);
     }
 
     @Test

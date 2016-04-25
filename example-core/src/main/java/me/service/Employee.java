@@ -1,5 +1,6 @@
 package me.service;
 
+import com.avaje.ebean.Ebean;
 import com.avaje.ebean.annotation.WhenCreated;
 import com.avaje.ebean.annotation.WhenModified;
 import org.slf4j.Logger;
@@ -58,7 +59,7 @@ public class Employee {
     }
 
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.PERSIST)
     private Set<Affiliation> affiliations;
     public Set<Affiliation> getAffiliations() {
         return affiliations;
@@ -68,6 +69,14 @@ public class Employee {
     }
 
 
+    //@PreRemove
+    public void preRemove() {
+        for (Affiliation aff : this.affiliations) {
+            aff.getMembers().remove(this);
+        }
+        Ebean.save(this);
+    }
+
     private PayBy payBy = new PayByBankAccount();
     public PayBy getPayBy() {
         return payBy;
@@ -76,13 +85,14 @@ public class Employee {
         this.payBy = payBy;
     }
     @Column(length = 2048)
-    private byte[] payByJson;
-    public byte[] getPayByJson() {
-        return payByJson;
+    private byte[] payByBinary;
+    public byte[] getPayByBinary() {
+        return payByBinary;
     }
-    public void setPayByJson(byte[] payByJson) {
-        this.payByJson = payByJson;
+    public void setPayByBinary(byte[] payByBinary) {
+        this.payByBinary = payByBinary;
     }
+
 
     private PayClassification payClassification = null;
     public PayClassification getPayClassification() {
@@ -92,14 +102,31 @@ public class Employee {
         this.payClassification = payClassification;
     }
     @Column(length = 2048)
-    private byte[] payClassificationJson;
-    public byte[] getPayClassificationJson() {
-        return payClassificationJson;
+    private byte[] payClassificationBinary;
+    public byte[] getPayClassificationBinary() {
+        return payClassificationBinary;
     }
-    public void setPayClassificationJson(byte[] payClassificationJson) {
-        this.payClassificationJson = payClassificationJson;
+    public void setPayClassificationBinary(byte[] payClassificationBinary) {
+        this.payClassificationBinary = payClassificationBinary;
     }
 
+//    @Column(length = 2048)
+//    private String payByBinary;
+//    public String getPayByBinary() {
+//        return payByBinary;
+//    }
+//    public void setPayByBinary(String payByBinary) {
+//        this.payByBinary = payByBinary;
+//    }
+//
+//    @Column(length = 2048)
+//    private String payClassificationBinary;
+//    public String getPayClassificationBinary() {
+//        return payClassificationBinary;
+//    }
+//    public void setPayClassificationBinary(String payClassificationBinary) {
+//        this.payClassificationBinary = payClassificationBinary;
+//    }
 
     private double calcSum() {
         double affCharge = 0.;

@@ -30,8 +30,7 @@ public class AddCommisionedEmployee implements Transaction {
 //        employee.setPaySchedule(new MonthlyPaySchedule());
         employee.setPayBy(new PayByPost(empId, addr));
 
-        CommisionedSalary commisionedSalary = new CommisionedSalary(empId, profitFactor);
-        commisionedSalary.setSalaryPerMonth(salaryPerMonth);
+        CommisionedSalary commisionedSalary = new CommisionedSalary(empId, salaryPerMonth, profitFactor);
         commisionedSalary.setPaySchedule(new MonthlyPaySchedule());
         employee.setBankAccount(bankAccount);
         employee.setPayClassification(commisionedSalary);

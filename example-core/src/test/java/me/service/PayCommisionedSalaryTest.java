@@ -44,11 +44,11 @@ public class PayCommisionedSalaryTest extends BaseTest {
 
         CommisionedSalary pc = (CommisionedSalary) employee.getPayClassification();
         assert(pc!=null);
-        assert(pc.getSalaryPerMonth()==800.);
+        assert(pc.getSalaryPerDue()==800.);
         assert(pc.getProfitFactor()==0.5);
         assert(pc.getEmpId()==empId);
-        assert(pc.calcSalary()==pc.getSalaryPerMonth());
-        assert(pc.calcSalary(dateFormat.parse("2015-10-10 15:12:12"))==pc.getSalaryPerMonth()+200*pc.getProfitFactor());
+        assert(pc.calcSalary()==pc.getSalaryPerDue());
+        assert(pc.calcSalary(dateFormat.parse("2015-10-10 15:12:12"))==pc.getSalaryPerDue()+200*pc.getProfitFactor());
 
     }
 

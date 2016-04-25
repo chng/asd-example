@@ -16,7 +16,7 @@ public class Affiliation {
     String name;
 
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.PERSIST)
     public Set<Employee> members;
 
     double calcCharge() {

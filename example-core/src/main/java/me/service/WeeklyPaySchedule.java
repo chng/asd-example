@@ -18,4 +18,12 @@ public class WeeklyPaySchedule implements PaySchedule {
     public boolean isPayDay() {
         return DateUtil.isLastDayOfWeek(new Date());
     }
+
+    public Date payStartDate(Date payDay) {
+        return DateUtil.startOfCurrentWeek(payDay);
+    }
+
+    public Date payEndDate(Date payDay) {
+        return DateUtil.endOfCurrentWeek(payDay);
+    }
 }

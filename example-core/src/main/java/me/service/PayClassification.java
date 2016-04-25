@@ -1,5 +1,7 @@
 package me.service;
 
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.Date;
@@ -7,7 +9,7 @@ import java.util.Date;
 /**
  * Created by chn on 16/1/23.
  */
-public abstract class PayClassification implements Serializable {
+public class PayClassification implements Serializable {
 
     long empId;
     public long getEmpId() {
@@ -17,7 +19,9 @@ public abstract class PayClassification implements Serializable {
         this.empId = empId;
     }
 
-    private PaySchedule paySchedule;
+
+    @Resource(name = "monthlyPaySchedule")
+    private PaySchedule paySchedule = (PaySchedule) new ClassPathXmlApplicationContext("classpath*:/spring-core.xml").getBean("monthlyPaySchedule");
     public PaySchedule getPaySchedule() {
         return paySchedule;
     }
@@ -25,19 +29,15 @@ public abstract class PayClassification implements Serializable {
         this.paySchedule = paySchedule;
     }
 
-    @Resource
-    MonthlyPaySchedule monthlyPaySchedule;
-
     public PayClassification(long id) {
         empId = id;
-        setPaySchedule(monthlyPaySchedule);
     }
 
-    abstract double calcSalary();
+    double calcSalary() {
+        return 0;
+    }
 
-    abstract double calcSalary(Date date);
-
-    public String toString() {
-        return this.getClass().getCanonicalName();
+    double calcSalary(Date date) {
+        return 0;
     }
 }

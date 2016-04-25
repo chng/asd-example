@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/spring-core.xml"})
 public class BaseTest extends AbstractJUnit4SpringContextTests {
+
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         String tmpDir = System.getProperty("java.io.tmpdir");

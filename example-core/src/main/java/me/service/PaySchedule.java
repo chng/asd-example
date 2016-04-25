@@ -9,4 +9,8 @@ import java.util.Date;
 public interface PaySchedule extends Serializable {
     boolean isPayDay(Date date);
     boolean isPayDay();
+
+    Date payStartDate(Date payDay);
+
+    Date payEndDate(Date payDay);
 }

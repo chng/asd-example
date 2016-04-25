@@ -7,29 +7,23 @@ import java.util.Date;
  */
 public class SalariedSalary extends PayClassification {
 
-    public SalariedSalary() {
-        super(0L);
-    }
-    public SalariedSalary(long id) {
-        super(id);
-    }
     public SalariedSalary(long id, double salaryPerMonth) {
         super(id);
-        this.salaryPerMonth = salaryPerMonth;
+        this.salaryPerDue = salaryPerMonth;
     }
 
-    public double getSalaryPerMonth() {
-        return salaryPerMonth;
+    public double getSalaryPerDue() {
+        return salaryPerDue;
     }
 
-    public void setSalaryPerMonth(double salaryPerMonth) {
-        this.salaryPerMonth = salaryPerMonth;
+    public void setSalaryPerDue(double salaryPerDue) {
+        this.salaryPerDue = salaryPerDue;
     }
 
-    private double salaryPerMonth = 0.0;
+    private double salaryPerDue = 0.0;
 
     public double calcSalary() {
-        return getSalaryPerMonth();
+        return getSalaryPerDue();
     }
 
     public double calcSalary(Date whichMonth) {

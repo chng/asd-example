@@ -21,8 +21,7 @@ public class AddSalariedEmployee implements Transaction{
         //employee.setPaySchedule(new MonthlyPaySchedule());
         employee.setPayBy(new PayByPost(empId, address));
 
-        SalariedSalary salariedSalary = new SalariedSalary(empId);
-        salariedSalary.setSalaryPerMonth(salaryPerMonth);
+        SalariedSalary salariedSalary = new SalariedSalary(empId, salaryPerMonth);
         salariedSalary.setPaySchedule(new MonthlyPaySchedule());
         employee.setBankAccount(bankAccount);
         employee.setPayClassification(salariedSalary);

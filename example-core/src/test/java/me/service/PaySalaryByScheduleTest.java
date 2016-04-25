@@ -17,39 +17,13 @@ public class PaySalaryByScheduleTest {
     static long salariedlyEmpId = 10L;
 
     @BeforeClass
-    public static void addEmployee() throws ParseException {
+    public static void addEmployee() {
         Transaction t;
         t = new AddHourlyEmployee(hourlyEmpId, "Bob", "Home", 200.0);
         t.execute();
-        t = new TimeCardTransaction(
-                DateUtil.parseFormat("2015-10-10 10:10:10"),
-                DateUtil.parseFormat("2015-10-10 21:10:10"),
-                hourlyEmpId
-        );
-        t.execute();
-        t = new TimeCardTransaction(
-                DateUtil.parseFormat("2015-10-11 10:10:10"),
-                DateUtil.parseFormat("2015-10-11 21:10:10"),
-                hourlyEmpId
-        );
-        t.execute();
-        //200 * (11+11)
 
         t = new AddCommisionedEmployee(commisionedEmpId, "Bob", "Home", 10000.0, 1);
         t.execute();
-        t = new SalesReceiptTransaction(
-                commisionedEmpId,
-                DateUtil.parseFormat("2015-10-10 10:10:10"),
-                200
-        );
-        t.execute();
-        t = new SalesReceiptTransaction(
-                commisionedEmpId,
-                DateUtil.parseFormat("2015-10-11 10:10:10"),
-                200
-        );
-        t.execute();
-        //10000+200+200
 
         t = new AddSalariedEmployee(salariedlyEmpId, "Bob", "Home", 12000.0);
         t.execute();
@@ -60,7 +34,41 @@ public class PaySalaryByScheduleTest {
     @Test
     // 不同的PayClassification应该持有不同的PaySchedule.
     // 例如HourlySalary可以持有WeeklySchedule, 但SalariedSalary不可以
-    public void testMonthlySchedulePay() {
+    public void testMonthlySchedulePay() throws ParseException, IllegalAccessException, ClassNotFoundException, InstantiationException {
+
+        Transaction t = new TimeCardTransaction(
+                DateUtil.parseFormat("2015-10-10 10:10:10.000"),
+                DateUtil.parseFormat("2015-10-10 21:10:10.000"),
+                hourlyEmpId
+        );
+        t.execute();
+        t = new TimeCardTransaction(
+                DateUtil.parseFormat("2015-10-11 10:10:10.000"),
+                DateUtil.parseFormat("2015-10-11 21:10:10.000"),
+                hourlyEmpId
+        );
+        t.execute();
+        t = new TimeCardTransaction(
+                DateUtil.parseFormat("2015-10-12 10:10:10.000"),
+                DateUtil.parseFormat("2015-10-12 21:10:10.000"),
+                hourlyEmpId
+        );
+        t.execute();
+        //200 * (11+11)
+
+        t = new SalesReceiptTransaction(
+                commisionedEmpId,
+                DateUtil.parseFormat("2015-10-10 10:10:10.000"),
+                200
+        );
+        t.execute();
+        t = new SalesReceiptTransaction(
+                commisionedEmpId,
+                DateUtil.parseFormat("2015-10-11 10:10:10.000"),
+                200
+        );
+        t.execute();
+        //10000+200+200
 
         Calendar cal = Calendar.getInstance();
         cal.set(2015, Calendar.OCTOBER, 31);
@@ -68,7 +76,10 @@ public class PaySalaryByScheduleTest {
         pt.execute();
         PayCheck pc;
         pc = pt.getPayCheck(hourlyEmpId);
-        assert(pc==null);
+        assert(pc!=null);
+        assert(pc.getPayDay().equals(cal.getTime()));
+        System.out.println("pc.getGrossPay() = " + pc.getGrossPay());
+        assert(pc.getGrossPay()==0);
 
         pc = pt.getPayCheck(commisionedEmpId);
         assert(pc!=null);
@@ -84,22 +95,8 @@ public class PaySalaryByScheduleTest {
     @Test
     public void testWeeklyPay() throws ParseException {
 
-        Transaction t;
-        t = new TimeCardTransaction(
-                DateUtil.parseFormat("2016-1-10 10:10:10"),
-                DateUtil.parseFormat("2016-1-10 21:10:10"),
-                hourlyEmpId
-        );
-        t.execute();
-        t = new TimeCardTransaction(
-                DateUtil.parseFormat("2016-1-11 10:10:10"),
-                DateUtil.parseFormat("2016-1-11 21:10:10"),
-                hourlyEmpId
-        );
-        t.execute();
-
         Calendar cal = Calendar.getInstance();
-        cal.set(2016, Calendar.JANUARY, 31);
+        cal.set(2015, Calendar.OCTOBER, 17);
         PayDayTransaction pt = new PayDayTransaction(cal.getTime());
         pt.execute();
         PayCheck pc;
@@ -108,5 +105,7 @@ public class PaySalaryByScheduleTest {
         assert(pc.getPayDay().equals(cal.getTime()));
         System.out.println("pc.getGrossPay() = " + pc.getGrossPay());
         assert(pc.getGrossPay()==(200 * (11+11)));
+
+        //TODO 7天为一个发薪期, 还需考虑10-10 ~ 10-11(跨发薪期)的情况
     }
 }

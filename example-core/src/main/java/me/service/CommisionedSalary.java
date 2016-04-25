@@ -1,7 +1,6 @@
 package me.service;
 
 import me.db.query.GpayrollDataBase;
-import me.util.DateUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -11,17 +10,9 @@ import java.util.List;
  */
 public class CommisionedSalary extends SalariedSalary {
 
-    public CommisionedSalary() {super(0L);}
-
     public CommisionedSalary(long id, double salaryPerMonth, double profitFactor) {
-        super(id);
-        this.setSalaryPerMonth(salaryPerMonth);
+        super(id, salaryPerMonth);
         this.setProfitFactor(profitFactor);
-    }
-
-    public CommisionedSalary(long id, double profitFactor) {
-        super(id);
-        this.profitFactor = profitFactor;
     }
 
 
@@ -37,22 +28,21 @@ public class CommisionedSalary extends SalariedSalary {
         return calcSalary(new Date());
     }
 
-    public double calcSalary(Date whichMonth) {
-        // 计算whichMonth的salary
-        return calcSalary(
-                DateUtil.startOfCurrentMonth(whichMonth),
-                DateUtil.startOfNextMonth(whichMonth)
-        );
+    public double calcSalary(Date payDay) {
+        // payDay是发薪日
+        // Salary从合适开始计, 由paySchedule给出.
+        Date startTime = getPaySchedule().payStartDate(payDay);
+        Date endTime   = getPaySchedule().payEndDate(payDay);
+        return calcSalary(startTime, endTime);
     }
 
 
     public double calcSalary(Date from, Date to) {
-        // 计算whichMonth的salary
         List<SalesReceipt> salesReceipts = GpayrollDataBase.getSalesReceipt(empId, from, to);
         double sum = 0.;
         for(SalesReceipt sp: salesReceipts) {
             sum += sp.getAmount();
         }
-        return getSalaryPerMonth() + sum*getProfitFactor();
+        return getSalaryPerDue() + sum*getProfitFactor();
     }
 }

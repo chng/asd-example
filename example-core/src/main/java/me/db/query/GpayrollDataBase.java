@@ -39,33 +39,41 @@ public class GpayrollDataBase {
         GpayrollDataBase.payClassificationJsonParser = payClassificationJsonParser;
     }
 
-    static void parseStorableInEmployee(Employee e) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-
+    static void parseStorableInEmployee(Employee e) {
         if(e==null) {
             return;
         }
-
-        e.setPayBy((PayBy) SerializationUtils.deserialize(e.getPayByJson()));
-        e.setPayClassification((PayClassification) SerializationUtils.deserialize(e.getPayClassificationJson()));
-
-//        if(!Strings.isEmpty(e.getPayByJson())) {
-//            log.info(e.getPayByJson());
-//            e.setPayBy((PayBy) payByJsonParser.parse(e.getPayByJson()));
-//        }
-//        if(!Strings.isEmpty(e.getPayClassificationJson())) {
-//            log.info(e.getPayClassificationJson());
-//            e.setPayClassification((PayClassification) payClassificationJsonParser.parse(e.getPayClassificationJson()));
-//        }
-
+        e.setPayBy((PayBy) SerializationUtils.deserialize(e.getPayByBinary()));
+        e.setPayClassification((PayClassification) SerializationUtils.deserialize(e.getPayClassificationBinary()));
 
     }
 
     static void parseEmployeeAttrToStorable(Employee e) {
-//        e.setPayByJson(JsonUtil.toJSONString(e.getPayBy()));
-//        e.setPayClassificationJson(JsonUtil.toJSONString(e.getPayClassification()));
-        e.setPayByJson(SerializationUtils.serialize(e.getPayBy()));
-        e.setPayClassificationJson(SerializationUtils.serialize(e.getPayClassification()));
+        e.setPayByBinary(SerializationUtils.serialize(e.getPayBy()));
+        e.setPayClassificationBinary(SerializationUtils.serialize(e.getPayClassification()));
     }
+
+//    @Deprecated
+//    static void parseJsonInEmployee(Employee e) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+//
+//        if (e == null) {
+//            return;
+//        }
+//        if (!Strings.isEmpty(e.getPayByBinary())) {
+//            log.info(e.getPayByBinary());
+//            e.setPayBy((PayBy) payByJsonParser.parse(e.getPayByBinary()));
+//        }
+//        if (!Strings.isEmpty(e.getPayClassificationBinary())) {
+//            log.info(e.getPayClassificationBinary());
+//            e.setPayClassification((PayClassification) payClassificationJsonParser.parse(e.getPayClassificationBinary()));
+//        }
+//    }
+//    @Deprecated
+//    static void parseEmployeeAttrToJson(Employee e) {
+//        e.setPayByBinary(JsonUtil.toJSONString(e.getPayBy()));
+//        e.setPayClassificationBinary(JsonUtil.toJSONString(e.getPayClassification()));
+//    }
+
 
     public static Employee getEmployeeById(long empId) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
         Employee e = Ebean.find(Employee.class, empId);
@@ -115,7 +123,7 @@ public class GpayrollDataBase {
         return Ebean.find(SalesReceipt.class).where()
                 .eq("emp_id", empId)
                 .ge("date", startTime)
-                .lt("date", endTime)
+                .le("date", endTime)
                 .findList();
     }
 
@@ -158,5 +166,9 @@ public class GpayrollDataBase {
             parseStorableInEmployee(e);
         }
         return emps;
+    }
+
+    public static void deleteTimeCardByEmpId(long hourlyEmpId) {
+        Ebean.delete(new TimeCard(null, null, hourlyEmpId));
     }
 }

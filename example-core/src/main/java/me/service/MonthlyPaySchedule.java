@@ -18,4 +18,12 @@ public class MonthlyPaySchedule implements PaySchedule {
     public boolean isPayDay() {
         return DateUtil.isLastDayOfMonth(new Date());
     }
+
+    public Date payStartDate(Date payDay) {
+        return DateUtil.startOfCurrentMonth(payDay);
+    }
+
+    public Date payEndDate(Date payDay) {
+        return DateUtil.endOfCurrentMonth(payDay);
+    }
 }
